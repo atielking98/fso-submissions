@@ -1,6 +1,18 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Notification = ({ message, messageClass }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className={messageClass}>
+      {message}
+    </div>
+  )
+}
+
 const Filter = ({newSearch, handleSearchChange}) => {
   return (
     <div>
@@ -42,6 +54,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [messageSuccess, setMessageSuccess] = useState(null)
+  const [messageError, setMessageError] = useState(null)
   
   useEffect(() => {
     personService
@@ -88,6 +102,21 @@ const App = () => {
         .update(foundPerson.id, personObject)
         .then(returnedPerson => {
           setPersons(persons.map(person => person.id !== foundPerson.id ? person : returnedPerson))
+          setMessageSuccess(
+            `Changed ${returnedPerson.name}'s number!`
+          )
+          setTimeout(() => {
+            setMessageSuccess(null)
+          }, 5000)
+        })
+        .catch(() => {
+          setMessageError(
+            `Person '${foundPerson.name}' was already removed from server`
+          )
+          setTimeout(() => {
+            setMessageError(null)
+          }, 5000)
+          setPersons(persons.filter(person => person.id !== foundPerson.id))
         })
       }
     } else {
@@ -95,6 +124,12 @@ const App = () => {
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setMessageSuccess(
+          `Added ${returnedPerson.name}'s contact!`
+        )
+        setTimeout(() => {
+          setMessageSuccess(null)
+        }, 5000)
         setNewName('')
         setNewPhone('')
       })
@@ -106,6 +141,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={messageSuccess} messageClass="success"/>
+      <Notification message={messageError} messageClass="error"/>
       <Filter newSearch={newSearch} handleSearchChange={handleSearchChange}/>
       <h2>Add a New Contact</h2>
       <Form addContact={addContact} newName={newName} 
