@@ -5,7 +5,7 @@ const url = process.env.MONGODB_URI
 console.log('connecting to', url)
 
 mongoose.connect(url)
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
@@ -13,11 +13,11 @@ mongoose.connect(url)
   })
 
 const phonebookSchema = new mongoose.Schema({
-    name: String,
-    number: String,
-    date: Date,
+  name: String,
+  number: String,
+  date: Date,
 })
-  
+
 phonebookSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()

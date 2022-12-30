@@ -20,30 +20,30 @@ const Contact = mongoose.model('Contact', phonebookSchema)
 
 // Just print all contacts
 if (process.argv.length === 3) {
-    Contact.find({}).then(result => {
-        result.forEach(contact => {
-          console.log(contact)
-        })
-        mongoose.connection.close()
-      })
+  Contact.find({}).then(result => {
+    result.forEach(contact => {
+      console.log(contact)
+    })
+    mongoose.connection.close()
+  })
 } else {
 // Adding a new contact
-    mongoose
+  mongoose
     .connect(url)
-    .then((result) => {
-        console.log('connected')
+    .then(() => {
+      console.log('connected')
 
-        const contact = new Contact({
-          name: process.argv[3],
-          number: process.argv[4],
-          date: new Date(),
-        })
+      const contact = new Contact({
+        name: process.argv[3],
+        number: process.argv[4],
+        date: new Date(),
+      })
 
-        return contact.save()
+      return contact.save()
     })
     .then(() => {
-        console.log('contact saved!')
-        return mongoose.connection.close()
+      console.log('contact saved!')
+      return mongoose.connection.close()
     })
     .catch((err) => console.log(err))
 }
