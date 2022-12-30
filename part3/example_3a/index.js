@@ -2,6 +2,7 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+
 const app = express()
 const Note = require('./models/note')
 app.use(express.static('build'))
@@ -14,6 +15,8 @@ const requestLogger = (request, response, next) => {
   console.log('---')
   next()
 }
+app.use(cors())
+
 app.use(requestLogger)
 
 
@@ -63,7 +66,7 @@ app.put('/api/notes/:id', (request, response, next) => {
 
 app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -92,7 +95,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
 
   next(error)
 }
