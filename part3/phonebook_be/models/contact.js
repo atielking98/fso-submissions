@@ -12,10 +12,41 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n)
+}
+
 const phonebookSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-  date: Date,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minlength: 8,
+    validate: {
+      validator: function(v) {
+        if (v.includes('-')) {
+          let vParts = v.split('-')
+          if (vParts.length !== 2) {
+            return false
+          } else if (vParts[0].length < 2 || vParts[0].length > 3) {
+            return false
+          } else if (!isNumber(vParts[0]) || !isNumber(vParts[1])) {
+            return false
+          }
+        }
+        return true
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    },
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  }
 })
 
 phonebookSchema.set('toJSON', {
