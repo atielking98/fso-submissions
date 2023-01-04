@@ -163,7 +163,7 @@ describe('delete a blog', () => {
     const blogToDelete = blogsAtStart[0]
 
     const deleteBody = {
-        userId: user.id
+      userId: user.id
     }
 
     await api
@@ -184,13 +184,40 @@ describe('delete a blog', () => {
   })
   test('an invalid blog id cannot be deleted', async () => {
     const deleteBody = {
-        userId: user.id
+      userId: user.id
     }
     await api
       .delete('/api/blogs/6969')
       .set('Authorization', userToken) // Works.
       .send(deleteBody)
       .expect(400)
+  })
+  test('cannot delete a blog without a token', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+    const deleteBody = {
+      userId: user.id
+    }
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .send(deleteBody)
+      .expect(401)
+  })
+  test('cannot delete a blog from another user', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+    const passwordHash = await bcrypt.hash('bingbong', 10)
+    const badUser = new User({ username: 'bingbong', passwordHash })
+
+    await badUser.save()
+    const deleteBody = {
+      userId: badUser.id
+    }
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', userToken) // Works.
+      .send(deleteBody)
+      .expect(401)
   })
 })
 
