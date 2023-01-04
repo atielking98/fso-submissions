@@ -23,7 +23,7 @@ blogsRouter.post('/', async(request, response) => {
       error: 'blog title must be unique'
     })
   }
-  const user = await User.findById(body.userId)
+  const user = request.user
   const blog = new Blog({
     title: body.title,
     author: body.author,
@@ -48,6 +48,22 @@ blogsRouter.get('/:id', async(request, response) => {
 })
 
 blogsRouter.delete('/:id', async(request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+  const user = request.user
+  if (!user) {
+    return response.status(401).json({ error: 'user not found' })
+  }
+  const blog = await Blog.findById(request.params.id)
+  if (blog) {
+    if (blog.user.toString() !== user.id.toString()) {
+      return response.status(401).json({ error: 'cannot delete another user blog' })
+    }
+  } else {
+    response.status(404).end()
+  }
   await Blog.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })

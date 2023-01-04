@@ -1,3 +1,4 @@
+const User = require('../models/user')
 const logger = require('./logger')
 
 const requestLogger = (request, response, next) => {
@@ -15,6 +16,13 @@ const tokenExtractor = (request, response, next) => {
   } else {
     request.token = null
   }
+
+  next()
+}
+
+const userExtractor = async(request, response, next) => {
+  const user = await User.findById(request.body.userId)
+  request.user = user
 
   next()
 }
@@ -43,5 +51,6 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  tokenExtractor
+  tokenExtractor,
+  userExtractor
 }

@@ -36,9 +36,9 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(Object.assign(helper.initialBlogs[0], { userId:user.id }))
+  let blogObject = new Blog(Object.assign(helper.initialBlogs[0], { user:user.id }))
   await blogObject.save()
-  blogObject = new Blog(Object.assign(helper.initialBlogs[1],  { userId:user.id }))
+  blogObject = new Blog(Object.assign(helper.initialBlogs[1],  { user:user.id }))
   await blogObject.save()
 })
 
@@ -162,8 +162,14 @@ describe('delete a blog', () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
+    const deleteBody = {
+        userId: user.id
+    }
+
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', userToken) // Works.
+      .send(deleteBody)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -177,8 +183,13 @@ describe('delete a blog', () => {
     expect(titles).not.toContain(blogToDelete.title)
   })
   test('an invalid blog id cannot be deleted', async () => {
+    const deleteBody = {
+        userId: user.id
+    }
     await api
       .delete('/api/blogs/6969')
+      .set('Authorization', userToken) // Works.
+      .send(deleteBody)
       .expect(400)
   })
 })
