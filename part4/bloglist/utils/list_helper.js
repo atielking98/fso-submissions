@@ -32,7 +32,6 @@ const mostLikes = (blogs) => {
     author: author,
     likes: _.sumBy(blogPosts, 'likes')
   }))
-  console.log(authorLikes)
   return authorLikes.reduce((prev, current) => (prev.likes > current.likes) ? prev : current, {})
 }
 

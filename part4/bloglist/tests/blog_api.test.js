@@ -4,14 +4,41 @@ const app = require('../app')
 
 const api = supertest(app)
 const helper = require('./test_helper')
+const bcrypt = require('bcrypt')
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+let user = null
+let userToken = null
+
+beforeAll(async () => {
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  user = new User({ username: 'root', passwordHash })
+
+  await user.save()
+
+  // need to log in user!
+  const login = {
+    username: 'root',
+    password: 'sekret'
+  }
+
+  const resultLogin = await api
+    .post('/api/login')
+    .send(login)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  userToken = 'bearer ' + resultLogin.body.token
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(helper.initialBlogs[0])
+  let blogObject = new Blog(Object.assign(helper.initialBlogs[0], { userId:user.id }))
   await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[1])
+  blogObject = new Blog(Object.assign(helper.initialBlogs[1],  { userId:user.id }))
   await blogObject.save()
 })
 
@@ -45,11 +72,13 @@ describe('add a blog', () => {
       title: 'async/await simplifies making async calls',
       author: 'Big Bob',
       url: 'beep.com',
-      likes: 10
+      likes: 10,
+      userId: user.id
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', userToken) // Works.
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -64,11 +93,13 @@ describe('add a blog', () => {
 
   test('blog without title or URL is not added', async () => {
     const newBlog = {
-      likes: 0
+      likes: 0,
+      userId: user.id
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', userToken) // Works.
       .send(newBlog)
       .expect(400)
 
@@ -81,11 +112,13 @@ describe('add a blog', () => {
     const newBlog = {
       title: 'async/await simplifies making async calls',
       author: 'Big Bob',
-      url: 'beep.com'
+      url: 'beep.com',
+      userId: user.id
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', userToken) // Works.
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
