@@ -15,7 +15,7 @@ let userToken = null
 beforeAll(async () => {
   await User.deleteMany({})
 
-  const passwordHash = await bcrypt.hash('sekret', 10)
+  const passwordHash = bcrypt.hashSync('sekret', 10)
   user = new User({ username: 'root', passwordHash })
 
   await user.save()
@@ -72,8 +72,7 @@ describe('add a blog', () => {
       title: 'async/await simplifies making async calls',
       author: 'Big Bob',
       url: 'beep.com',
-      likes: 10,
-      userId: user.id
+      likes: 10
     }
 
     await api
@@ -93,8 +92,7 @@ describe('add a blog', () => {
 
   test('blog without title or URL is not added', async () => {
     const newBlog = {
-      likes: 0,
-      userId: user.id
+      likes: 0
     }
 
     await api
@@ -112,8 +110,7 @@ describe('add a blog', () => {
     const newBlog = {
       title: 'async/await simplifies making async calls',
       author: 'Big Bob',
-      url: 'beep.com',
-      userId: user.id
+      url: 'beep.com'
     }
 
     await api
@@ -162,14 +159,9 @@ describe('delete a blog', () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
-    const deleteBody = {
-      userId: user.id
-    }
-
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
       .set('Authorization', userToken) // Works.
-      .send(deleteBody)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -183,24 +175,16 @@ describe('delete a blog', () => {
     expect(titles).not.toContain(blogToDelete.title)
   })
   test('an invalid blog id cannot be deleted', async () => {
-    const deleteBody = {
-      userId: user.id
-    }
     await api
       .delete('/api/blogs/6969')
       .set('Authorization', userToken) // Works.
-      .send(deleteBody)
       .expect(400)
   })
   test('cannot delete a blog without a token', async () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
-    const deleteBody = {
-      userId: user.id
-    }
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .send(deleteBody)
       .expect(401)
   })
   test('cannot delete a blog from another user', async () => {
@@ -210,13 +194,20 @@ describe('delete a blog', () => {
     const badUser = new User({ username: 'bingbong', passwordHash })
 
     await badUser.save()
-    const deleteBody = {
-      userId: badUser.id
+
+    const badLogin = {
+      username: 'bingbong',
+      password: 'bingbong'
     }
+    const resultLogin = await api
+      .post('/api/login')
+      .send(badLogin)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    let badUserToken = 'bearer ' + resultLogin.body.token
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .set('Authorization', userToken) // Works.
-      .send(deleteBody)
+      .set('Authorization', badUserToken) // Works.
       .expect(401)
   })
 })
