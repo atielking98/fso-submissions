@@ -63,8 +63,12 @@ const App = () => {
     setNewLikes(event.target.value);
   }
 
+  const likeBlog = (event) => {
+    console.log('liked!')
+  }
+
   const deleteBlog = (event) => {
-    const title = event.target.parentElement.children[0].textContent;
+    const title = event.target.parentElement.children[0].children[0].textContent
     const toDeleteId = blogs.find(blog => blog.title === title).id;
     if (window.confirm(`Delete ${title}?`)) {
       blogService
@@ -193,7 +197,7 @@ const App = () => {
           <h3>{ user.username } logged in</h3>
           <button onClick={logOut}>log out</button>
           {blogs.map(blog =>
-            <Blog deleteBlog={deleteBlog} key={blog.id} blog={blog} />
+            <Blog likeBlog={likeBlog} deleteBlog={deleteBlog} key={blog.id} blog={blog} />
           )}
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm 
