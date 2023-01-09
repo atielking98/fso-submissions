@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 
 const Notification = ({ message, messageClass }) => {
   if (message === null) {
@@ -15,27 +18,6 @@ const Notification = ({ message, messageClass }) => {
   )
 }
 
-const BlogForm = ({addBlog, newTitle, handleTitleChange, newAuthor, handleAuthorChange,
-  newURL, handleURLChange, newLikes, handleLikesChange}) => {
- return (
-   <form onSubmit={addBlog}>
-       <div>
-         title: <input value={newTitle} onChange={handleTitleChange} />
-       </div>
-       <div>
-         author: <input value={newAuthor} onChange={handleAuthorChange} />
-       </div>
-       <div>
-         url: <input value={newURL} onChange={handleURLChange} />
-       </div>
-       <div>likes: <input value={newLikes} onChange={handleLikesChange} /></div>
-       <div>
-         <button type="submit">add</button>
-       </div>
-   </form>
- )
-}
-
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
@@ -47,6 +29,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [messageError, setErrorMessage] = useState(null)
   const [messageSuccess, setSuccessMessage] = useState(null)
+
+  const blogFormRef = useRef()
   
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -160,6 +144,7 @@ const App = () => {
         }, 5000)
       })
     }
+    blogFormRef.current.toggleVisibility()
   }
 
 
@@ -189,48 +174,20 @@ const App = () => {
     setUser(null)
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-      </div>
-      <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-      </div>
-      <button type="submit">login</button>
-    </form>      
-  )
-
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        { loginForm() }
-      </div>
-    )
-  }
-
   return (
     <div>
       <Notification message={messageSuccess} messageClass="success"/>
       <Notification message={messageError} messageClass="error"/>
       { user === null ?
-        <div>
-          <h2>Log in to application</h2>
-          { loginForm() }
-          </div> :
+        <Togglable buttonLabel='login'>
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
+        </Togglable> :
         <div>
           <h2>blogs</h2>
           <h3>{ user.username } logged in</h3>
@@ -238,11 +195,19 @@ const App = () => {
           {blogs.map(blog =>
             <Blog deleteBlog={deleteBlog} key={blog.id} blog={blog} />
           )}
-          <BlogForm addBlog={addBlog} newTitle={newTitle} 
-            handleTitleChange={handleTitleChange} newAuthor={newAuthor} 
-            handleAuthorChange={handleAuthorChange} newURL={newURL} handleURLChange={handleURLChange}
-            newLikes={newLikes} handleLikesChange={handleLikesChange}
-          />
+          <Togglable buttonLabel='new blog' ref={blogFormRef}>
+            <BlogForm 
+              addBlog={addBlog} 
+              newTitle={newTitle} 
+              handleTitleChange={handleTitleChange} 
+              newAuthor={newAuthor} 
+              handleAuthorChange={handleAuthorChange} 
+              newURL={newURL} 
+              handleURLChange={handleURLChange}
+              newLikes={newLikes} 
+              handleLikesChange={handleLikesChange}
+            />
+          </Togglable>
         </div>
       }
     </div>
