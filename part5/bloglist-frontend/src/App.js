@@ -64,7 +64,38 @@ const App = () => {
   }
 
   const likeBlog = (event) => {
+    console.log(event.target.parentElement.parentElement)
+    const title = event.target.parentElement.parentElement.children[0].children[0].textContent
+    const foundBlog = blogs.find(blog => blog.title === title);
+    const blogObject = {
+      title: foundBlog.title,
+      author: foundBlog.author,
+      url: foundBlog.url,
+      likes: foundBlog.likes + 1
+    }
+    console.log(blogObject)
     console.log('liked!')
+    blogService
+      .update(foundBlog.id, blogObject)
+      .then(() => {
+        setBlogs(blogs.map(blog => {
+          if (blog.title === title) {
+            return blogObject
+          } else {
+            return blog
+          }
+        }))
+      })
+      .catch(error => {
+        // this is the way to access the error message
+        console.log(error.response.data.error)
+        setErrorMessage(
+          error.response.data.error
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
   }
 
   const deleteBlog = (event) => {
