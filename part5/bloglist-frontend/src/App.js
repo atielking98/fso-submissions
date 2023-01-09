@@ -33,15 +33,18 @@ const App = () => {
   const blogFormRef = useRef()
   
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
       setBlogs( blogs )
-    )  
+      console.log('these are the blogs')
+      console.log(blogs)
+    })  
   }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+      console.log(user)
       setUser(user)
       blogService.setToken(user.token)
     }
@@ -66,12 +69,15 @@ const App = () => {
   const likeBlog = (event) => {
     console.log(event.target.parentElement.parentElement)
     const title = event.target.parentElement.parentElement.children[0].children[0].textContent
-    const foundBlog = blogs.find(blog => blog.title === title);
+    const foundBlog = blogs.find(blog => blog.title === title)
+    console.log(foundBlog.id)
+    console.log(foundBlog)
     const blogObject = {
       title: foundBlog.title,
       author: foundBlog.author,
       url: foundBlog.url,
-      likes: foundBlog.likes + 1
+      likes: foundBlog.likes + 1,
+      user: foundBlog.user.id
     }
     console.log(blogObject)
     console.log('liked!')
@@ -80,7 +86,7 @@ const App = () => {
       .then(() => {
         setBlogs(blogs.map(blog => {
           if (blog.title === title) {
-            return blogObject
+            return {...blogObject, user: foundBlog.user}
           } else {
             return blog
           }
@@ -227,8 +233,8 @@ const App = () => {
           <h2>blogs</h2>
           <h3>{ user.username } logged in</h3>
           <button onClick={logOut}>log out</button>
-          {blogs.map(blog =>
-            <Blog likeBlog={likeBlog} deleteBlog={deleteBlog} key={blog.id} blog={blog} />
+          {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+            <Blog user={user} blogUsername={blog.user.username} likeBlog={likeBlog} deleteBlog={deleteBlog} key={blog.id} blog={blog} />
           )}
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm 

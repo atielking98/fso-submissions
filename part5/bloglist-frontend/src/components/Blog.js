@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, deleteBlog, likeBlog }) => {
+const Blog = ({ user, blogUsername, blog, deleteBlog, likeBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -31,7 +31,7 @@ const Blog = ({ blog, deleteBlog, likeBlog }) => {
         </div>
         <div>URL: <a id="url" target="_blank" rel="noopener noreferrer" href={blog.url}>{blog.url}</a></div>
         <div>{blog.likes} likes <button onClick={likeBlog}>like</button></div>
-        <button onClick={deleteBlog}>Delete</button>
+        {user.username === blogUsername && <button onClick={deleteBlog}>Delete</button>}
       </div>
   </div>
 )}
