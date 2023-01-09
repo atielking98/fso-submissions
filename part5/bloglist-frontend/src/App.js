@@ -25,68 +25,61 @@ const App = () => {
   const [newAuthor, setNewAuthor] = useState('')
   const [newURL, setNewURL] = useState('')
   const [newLikes, setNewLikes] = useState(0)
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [messageError, setErrorMessage] = useState(null)
   const [messageSuccess, setSuccessMessage] = useState(null)
 
   const blogFormRef = useRef()
-  
+
   useEffect(() => {
-    blogService.getAll().then(blogs => {
+    blogService.getAll().then(blogs => 
       setBlogs( blogs )
-      console.log('these are the blogs')
-      console.log(blogs)
-    })  
+    )
   }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      console.log(user)
       setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
 
   const handleTitleChange = (event) => {
-    setNewTitle(event.target.value);
+    setNewTitle(event.target.value)
   }
 
   const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value);
+    setNewAuthor(event.target.value)
   }
 
   const handleURLChange = (event) => {
-    setNewURL(event.target.value);
+    setNewURL(event.target.value)
   }
 
   const handleLikesChange = (event) => {
-    setNewLikes(event.target.value);
+    setNewLikes(event.target.value)
   }
 
   const likeBlog = (event) => {
-    console.log(event.target.parentElement.parentElement)
     const title = event.target.parentElement.parentElement.children[0].children[0].textContent
     const foundBlog = blogs.find(blog => blog.title === title)
-    console.log(foundBlog.id)
-    console.log(foundBlog)
     const blogObject = {
+      id: foundBlog.id,
       title: foundBlog.title,
       author: foundBlog.author,
       url: foundBlog.url,
       likes: foundBlog.likes + 1,
       user: foundBlog.user.id
     }
-    console.log(blogObject)
-    console.log('liked!')
     blogService
       .update(foundBlog.id, blogObject)
       .then(() => {
         setBlogs(blogs.map(blog => {
           if (blog.title === title) {
-            return {...blogObject, user: foundBlog.user}
+            return { ...blogObject, user: foundBlog.user }
           } else {
             return blog
           }
@@ -106,7 +99,7 @@ const App = () => {
 
   const deleteBlog = (event) => {
     const title = event.target.parentElement.children[0].children[0].textContent
-    const toDeleteId = blogs.find(blog => blog.title === title).id;
+    const toDeleteId = blogs.find(blog => blog.title === title).id
     if (window.confirm(`Delete ${title}?`)) {
       blogService
         .deleteBlog(toDeleteId)
@@ -127,65 +120,67 @@ const App = () => {
   }
 
   const addBlog = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     const blogObject = {
       title: newTitle,
       author: newAuthor,
       url: newURL,
-      likes: newLikes
+      likes: newLikes,
+      user: user
     }
-    const foundBlog = blogs.find(blog => blog.title === newTitle);
+    const foundBlog = blogs.find(blog => blog.title === newTitle)
     if (foundBlog) {
       if(window.confirm(`${newTitle} is already added to bloglist, replace the old blog info with new info?`)) {
         blogService
-        .update(foundBlog.id, blogObject)
+          .update(foundBlog.id, blogObject)
+          .then(returnedBlog => {
+            setBlogs(blogs.map(blog => blog.id !== foundBlog.id ? blog : returnedBlog))
+            setSuccessMessage(
+              `Changed ${returnedBlog.title}'s info!`
+            )
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 5000)
+            blogFormRef.current.toggleVisibility()
+          })
+          .catch(() => {
+            setErrorMessage(
+              `Person '${foundBlog.title}' was already removed from server`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+            setBlogs(blogs.filter(blog => blog.id !== foundBlog.id))
+          })
+      }
+    } else {
+      blogService
+        .create(blogObject)
         .then(returnedBlog => {
-          setBlogs(blogs.map(blog => blog.id !== foundBlog.id ? blog : returnedBlog))
+          setBlogs(blogs.concat(returnedBlog))
           setSuccessMessage(
-            `Changed ${returnedBlog.title}'s info!`
+            `Added ${returnedBlog.title}'s info!`
           )
           setTimeout(() => {
             setSuccessMessage(null)
           }, 5000)
+          setNewTitle('')
+          setNewAuthor('')
+          setNewURL('')
+          setNewLikes(0)
+          blogFormRef.current.toggleVisibility()
         })
-        .catch(() => {
+        .catch(error => {
+        // this is the way to access the error message
+          console.log(error.response.data.error)
           setErrorMessage(
-            `Person '${foundBlog.title}' was already removed from server`
+            error.response.data.error
           )
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
-          setBlogs(blogs.filter(blog => blog.id !== foundBlog.id))
         })
-      }
-    } else {
-      blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setSuccessMessage(
-          `Added ${returnedBlog.title}'s info!`
-        )
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
-        setNewTitle('')
-        setNewAuthor('')
-        setNewURL('')
-        setNewLikes(0)
-      })
-      .catch(error => {
-        // this is the way to access the error message
-        console.log(error.response.data.error)
-        setErrorMessage(
-          error.response.data.error
-        )
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-      })
     }
-    blogFormRef.current.toggleVisibility()
   }
 
 
@@ -199,7 +194,7 @@ const App = () => {
       blogService.setToken(user.token)
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -210,7 +205,7 @@ const App = () => {
     }
   }
 
-  const logOut = async (event) => {
+  const logOut = async () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
@@ -234,18 +229,18 @@ const App = () => {
           <h3>{ user.username } logged in</h3>
           <button onClick={logOut}>log out</button>
           {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-            <Blog user={user} blogUsername={blog.user.username} likeBlog={likeBlog} deleteBlog={deleteBlog} key={blog.id} blog={blog} />
+            <Blog user={user} likeBlog={likeBlog} deleteBlog={deleteBlog} key={blog.id} blog={blog} />
           )}
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
-            <BlogForm 
-              addBlog={addBlog} 
-              newTitle={newTitle} 
-              handleTitleChange={handleTitleChange} 
-              newAuthor={newAuthor} 
-              handleAuthorChange={handleAuthorChange} 
-              newURL={newURL} 
+            <BlogForm
+              addBlog={addBlog}
+              newTitle={newTitle}
+              handleTitleChange={handleTitleChange}
+              newAuthor={newAuthor}
+              handleAuthorChange={handleAuthorChange}
+              newURL={newURL}
               handleURLChange={handleURLChange}
-              newLikes={newLikes} 
+              newLikes={newLikes}
               handleLikesChange={handleLikesChange}
             />
           </Togglable>
