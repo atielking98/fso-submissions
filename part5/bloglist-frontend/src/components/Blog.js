@@ -10,7 +10,7 @@ const Blog = ({ user, blog, deleteBlog, likeBlog }) => {
     marginBottom: 5
   }
 
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
@@ -21,17 +21,17 @@ const Blog = ({ user, blog, deleteBlog, likeBlog }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={hideWhenVisible}>
+      <div style={hideWhenVisible} className="initialDetails">
         <div>
           <span>{blog.title}</span> by {blog.author} <button onClick={toggleVisibility}>view</button>
         </div>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="hiddenDetails">
         <div>
-          <span>{blog.title}</span> by {blog.author} <button onClick={toggleVisibility}>hide</button>
+          <span>{blog.title}</span> by {blog.author} <button className="viewDetails" onClick={toggleVisibility}>hide</button>
         </div>
         <div>URL: <a id="url" target="_blank" rel="noopener noreferrer" href={blog.url}>{blog.url}</a></div>
-        <div>{blog.likes} likes <button onClick={likeBlog}>like</button></div>
+        <div>{blog.likes} likes <button className="likeBlog" onClick={likeBlog}>like</button></div>
         {user.username === blog.user.username && <button onClick={deleteBlog}>Delete</button>}
       </div>
     </div>

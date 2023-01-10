@@ -8,7 +8,7 @@ const BlogForm = ({ addBlog, newTitle, handleTitleChange, newAuthor, handleAutho
 
       <form onSubmit={addBlog}>
         <div>
-            title: <input value={newTitle} onChange={handleTitleChange} />
+            title: <input placeholder="write blog title here" value={newTitle} onChange={handleTitleChange} />
         </div>
         <div>
             author: <input value={newAuthor} onChange={handleAuthorChange} />
@@ -27,14 +27,14 @@ const BlogForm = ({ addBlog, newTitle, handleTitleChange, newAuthor, handleAutho
 
 BlogForm.propTypes = {
   addBlog: PropTypes.func.isRequired,
-  newTitle: PropTypes.string.isRequired,
-  handleTitleChange: PropTypes.func.isRequired,
-  newAuthor: PropTypes.string.isRequired,
-  handleAuthorChange: PropTypes.func.isRequired,
-  newURL: PropTypes.string.isRequired,
-  handleURLChange: PropTypes.func.isRequired,
-  newLikes: PropTypes.number.isRequired,
-  handleLikesChange: PropTypes.func.isRequired
+  newTitle: PropTypes.string,
+  handleTitleChange: PropTypes.func,
+  newAuthor: PropTypes.string,
+  handleAuthorChange: PropTypes.func,
+  newURL: PropTypes.string,
+  handleURLChange: PropTypes.func,
+  newLikes: PropTypes.number,
+  handleLikesChange: PropTypes.func
 }
 
 
