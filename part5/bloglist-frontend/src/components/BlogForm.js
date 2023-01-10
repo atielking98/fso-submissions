@@ -8,15 +8,15 @@ const BlogForm = ({ addBlog, newTitle, handleTitleChange, newAuthor, handleAutho
 
       <form onSubmit={addBlog}>
         <div>
-            title: <input placeholder="write blog title here" value={newTitle} onChange={handleTitleChange} />
+            title: <input id='blog-title' placeholder="write blog title here" value={newTitle} onChange={handleTitleChange} />
         </div>
         <div>
-            author: <input value={newAuthor} onChange={handleAuthorChange} />
+            author: <input id='blog-author' value={newAuthor} onChange={handleAuthorChange} />
         </div>
         <div>
-            url: <input value={newURL} onChange={handleURLChange} />
+            url: <input id='blog-url' value={newURL} onChange={handleURLChange} />
         </div>
-        <div>likes: <input value={newLikes} onChange={handleLikesChange} /></div>
+        <div>likes: <input id='blog-likes' value={newLikes} onChange={handleLikesChange} /></div>
         <div>
           <button type="submit">add</button>
         </div>

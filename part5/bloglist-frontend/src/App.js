@@ -33,9 +33,10 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
+      console.log(blogs)
       setBlogs( blogs )
-    )
+    })
   }, [])
 
   useEffect(() => {
@@ -215,15 +216,18 @@ const App = () => {
       <Notification message={messageSuccess} messageClass="success"/>
       <Notification message={messageError} messageClass="error"/>
       { user === null ?
-        <Togglable buttonLabel='login'>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
-        </Togglable> :
+        <div>
+          <h2>blogs</h2>
+          <Togglable buttonLabel='login'>
+            <LoginForm
+              username={username}
+              password={password}
+              handleUsernameChange={({ target }) => setUsername(target.value)}
+              handlePasswordChange={({ target }) => setPassword(target.value)}
+              handleSubmit={handleLogin}
+            />
+          </Togglable>
+        </div> :
         <div>
           <h2>blogs</h2>
           <h3>{ user.username } logged in</h3>

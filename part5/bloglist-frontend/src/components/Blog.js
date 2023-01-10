@@ -10,6 +10,8 @@ const Blog = ({ user, blog, deleteBlog, likeBlog }) => {
     marginBottom: 5
   }
 
+  console.log(blog)
+
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -20,7 +22,7 @@ const Blog = ({ user, blog, deleteBlog, likeBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div style={hideWhenVisible} className="initialDetails">
         <div>
           <span>{blog.title}</span> by {blog.author} <button onClick={toggleVisibility}>view</button>
