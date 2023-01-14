@@ -1,4 +1,8 @@
+import { useSelector, useDispatch } from 'react-redux'
+
 const Notification = () => {
+  const notifications = useSelector(({anecdotes, notifications, filter}) => notifications)
+      
   const style = {
     border: 'solid',
     padding: 10,
@@ -6,7 +10,7 @@ const Notification = () => {
   }
   return (
     <div style={style}>
-      render here notification...
+      { notifications.notification }
     </div>
   )
 }
