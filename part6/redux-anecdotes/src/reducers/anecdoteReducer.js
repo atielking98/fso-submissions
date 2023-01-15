@@ -1,13 +1,8 @@
-const anecdotesAtStart = [
-  'If it hurts, do it more often',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
-]
-
+import { createSlice } from '@reduxjs/toolkit'
 const getId = () => (100000 * Math.random()).toFixed(0)
+
+const generateId = () =>
+  Number((Math.random() * 1000000).toFixed(0))
 
 const asObject = (anecdote) => {
   return {
@@ -17,16 +12,17 @@ const asObject = (anecdote) => {
   }
 }
 
-const initialState = anecdotesAtStart.map(asObject)
+const initialState = []
 
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
-  switch(action.type) {
-    case 'NEW_ANECDOTE':
-      return [...state, asObject(action.data.anecdote)]
-    case 'VOTE':
-      const id = action.data.id
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState: [],
+  reducers: {
+    createAnecdote(state, action) {
+      state.push(action.payload)
+    },
+    voteOn(state, action) {
+      const id = action.payload
       const anecdoteToChange = state.find(n => n.id === id)
       const changedAnecdote = { 
         ...anecdoteToChange, 
@@ -34,24 +30,14 @@ const reducer = (state = initialState, action) => {
       }
       return state.map(anecdote =>
         anecdote.id !== id ? anecdote : changedAnecdote 
-      )
-    default:
-      return state
-  }
-}
+      )  
+    },
+    setAnecdotes(state, action) {
+      return action.payload
+    }
+  },
+})
 
-export const createAnecdote = (anecdote) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    data: { anecdote }
-  }
-}
+export const { createAnecdote, voteOn, setAnecdotes } = anecdoteSlice.actions
 
-export const voteOn = (id) => {
-  return {
-    type: 'VOTE',
-    data: { id }
-  }
-}
-
-export default reducer
+export default anecdoteSlice.reducer
