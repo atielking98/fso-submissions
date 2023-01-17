@@ -1,11 +1,9 @@
-import { filterChange } from '../reducers/filterReducer'
-import { useDispatch } from 'react-redux'
+import { changeFilter } from '../reducers/filterReducer'
+import { connect } from 'react-redux'
 
-const Filter = () => {
-    const dispatch = useDispatch()
-    
+const Filter = (props) => {    
     const handleChange = (event) => {
-        dispatch(filterChange(event.target.value))
+        props.changeFilter(event.target.value)
     }
     const style = {
       marginBottom: 10
@@ -18,4 +16,16 @@ const Filter = () => {
     )
   }
   
-  export default Filter
+  const mapStateToProps = (state) => {
+    return {
+      state
+    }
+  }
+  
+  const mapDispatchToProps = {
+    changeFilter,
+  }
+  
+  const ConnectedFilter = connect(mapStateToProps, mapDispatchToProps)(Filter)
+  
+  export default ConnectedFilter
