@@ -1,4 +1,4 @@
-describe('Note ', function () {
+describe('Blog ', function () {
   beforeEach(function () {
     cy.reset_db()
     cy.create_user({
@@ -40,7 +40,7 @@ describe('Note ', function () {
     })
 
     it('A blog can be created', function () {
-      cy.contains('new note').click()
+      cy.contains('new blog').click()
       cy.get('#title').type(
         'Authenticate faster in tests with the cy.session command'
       )
@@ -68,7 +68,7 @@ describe('Note ', function () {
       })
 
       /*
-      cy.contains('new note').click()
+      cy.contains('new blog').click()
       cy.get('#title').type('Authenticate faster in tests with the cy.session command')
       cy.get('#author').type('The Cypress team')
       cy.get('#url').type('https://www.cypress.io/blog/2021/08/04/authenticate-faster-in-tests-cy-session-command/')

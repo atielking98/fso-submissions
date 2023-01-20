@@ -35,6 +35,7 @@ const App = () => {
         password
       })
       .then((user) => {
+        console.log(user)
         setUser(user)
         userService.setUser(user)
         notify(`${user.name} logged in!`)
@@ -126,7 +127,7 @@ const App = () => {
         <button onClick={logout}>logout</button>
       </div>
 
-      <Togglable buttonLabel="new note" ref={blogFormRef}>
+      <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <NewBlogForm onCreate={createBlog} />
       </Togglable>
 
