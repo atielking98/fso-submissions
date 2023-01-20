@@ -1,5 +1,7 @@
-const Notification = ({ notification }) => {
-  if (notification === null) {
+import { connect } from 'react-redux'
+
+const Notification = ({ notification }) => {      
+  if (!notification) {
     return null
   }
 
@@ -12,7 +14,6 @@ const Notification = ({ notification }) => {
     padding: 10,
     marginBottom: 10
   }
-
   return (
     <div id="notification" style={style}>
       {notification.message}
@@ -20,4 +21,12 @@ const Notification = ({ notification }) => {
   )
 }
 
-export default Notification
+const mapStateToProps = (state) => {
+  return {
+    notification: state.notification,
+  }
+}
+
+
+const ConnectedNotification = connect(mapStateToProps)(Notification)
+export default ConnectedNotification
