@@ -1,8 +1,42 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { like, deleteBlog } from '../reducers/blogReducer'
+import { createNotification } from '../reducers/notificationReducer'
+import {
+  useNavigate
+} from 'react-router-dom'
 
-const BlogDetails = ({ blog, visible, likeBlog, removeBlog, own }) => {
-  if (!visible) return null
+const BlogDetails = ({ blog, own }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const notify = (message, type = 'info') => {
+    dispatch(createNotification({"message": message, "type": type}, 5000))
+  }
+
+  const removeBlog = (id) => {
+    const ok = window.confirm(
+      `remove '${blog.title}' by ${blog.author}?`
+    )
+
+    if (!ok) {
+      return
+    }
+
+    dispatch(deleteBlog(id))
+    navigate('/')
+    const message = `Blog ${blog.title} successfully deleted`
+    notify(message)
+  }
+
+  const likeBlog = async () => {
+    const liked = {
+      ...blog,
+      likes: (blog.likes || 0) + 1,
+      user: blog.user.id
+    }
+    const message = `Blog ${liked.title} successfully liked`
+    dispatch(like(liked))
+    notify(message)
+  }
 
   const addedBy = blog.user && blog.user.name ? blog.user.name : 'anonymous'
 
@@ -13,57 +47,27 @@ const BlogDetails = ({ blog, visible, likeBlog, removeBlog, own }) => {
       </div>
       <div>
         {blog.likes} likes{' '}
-        <button onClick={() => likeBlog(blog.id)}>like</button>
+        <button onClick={() => likeBlog()}>like</button>
       </div>
-      {addedBy}
+      added by {addedBy}
       {own && <button onClick={() => removeBlog(blog.id)}>remove</button>}
     </div>
   )
 }
 
-const Blog = ({ blog, likeBlog, removeBlog, user }) => {
-  const [visible, setVisible] = useState(false)
-
-  const style = {
-    padding: 3,
-    margin: 5,
-    borderStyle: 'solid',
-    borderWidth: 1
-  }
+const Blog = ({ blog, user }) => {
+  console.log(blog)
+  console.log(user)
 
   return (
-    <div style={style} className="blog">
-      {blog.title} {blog.author}
-      <button onClick={() => setVisible(!visible)}>
-        {visible ? 'hide' : 'view'}
-      </button>
+    <div className="blog">
+      <h2>{blog.title} by {blog.author}</h2>
       <BlogDetails
         blog={blog}
-        visible={visible}
-        likeBlog={likeBlog}
-        removeBlog={removeBlog}
         own={blog.user && user.username === blog.user.username}
       />
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    author: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    user: PropTypes.shape({
-      username: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
-    })
-  }).isRequired,
-  user: PropTypes.shape({
-    username: PropTypes.string.isRequired
-  }),
-  likeBlog: PropTypes.func.isRequired,
-  removeBlog: PropTypes.func.isRequired
 }
 
 export default Blog
