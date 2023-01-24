@@ -1,14 +1,18 @@
 import axios from 'axios'
-import userService from './user'
 
 const baseUrl = '/api/blogs'
+let token = null
 
 const config = () => {
   return {
     headers: {
-      Authorization: `bearer ${userService.getToken()}`
+      Authorization: `bearer ${token}`
     }
   }
+}
+
+const setToken = (newToken) => {
+  token = newToken
 }
 
 const getAll = () => {
@@ -30,4 +34,4 @@ const remove = (id) => {
   return axios.delete(`${baseUrl}/${id}`, config())
 }
 
-export default { getAll, create, update, remove }
+export default { setToken, getAll, create, update, remove }
