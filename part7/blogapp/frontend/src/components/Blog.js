@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { like, deleteBlog } from '../reducers/blogReducer'
+import { like, deleteBlog, commentBlog } from '../reducers/blogReducer'
 import { createNotification } from '../reducers/notificationReducer'
 import {
   useNavigate
@@ -27,7 +27,7 @@ const BlogDetails = ({ blog, own }) => {
     notify(message)
   }
 
-  const likeBlog = async () => {
+  const likeBlog = () => {
     const liked = {
       ...blog,
       likes: (blog.likes || 0) + 1,
@@ -35,6 +35,19 @@ const BlogDetails = ({ blog, own }) => {
     }
     const message = `Blog ${liked.title} successfully liked`
     dispatch(like(liked))
+    notify(message)
+  }
+
+  const handleComment = (e) => {
+    e.preventDefault()
+    const comment = e.target.comment.value
+    const commented = {
+      ...blog,
+      comments: blog.comments.concat(comment),
+      user: blog.user.id
+    }
+    const message = `Blog ${commented.title} successfully commented on`
+    dispatch(commentBlog(commented))
     notify(message)
   }
 
@@ -51,13 +64,24 @@ const BlogDetails = ({ blog, own }) => {
       </div>
       added by {addedBy}
       {own && <button onClick={() => removeBlog(blog.id)}>remove</button>}
+      <h4>Comments</h4>
+      <form onSubmit={handleComment}>
+        <input id="comment" type="text" name="comment" />
+        <button id="comment-button" type="submit">
+          add comment
+        </button>
+      </form>
+      <ul>
+        {blog.comments.map(comment => <li key={comment}>{comment}</li>)}
+      </ul>
     </div>
   )
 }
 
 const Blog = ({ blog, user }) => {
-  console.log(blog)
-  console.log(user)
+  if (!blog) {
+    return null
+  }
 
   return (
     <div className="blog">

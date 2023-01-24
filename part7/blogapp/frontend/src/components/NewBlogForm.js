@@ -7,7 +7,7 @@ const NewBlogForm = ({ onCreate }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    onCreate({ title, author, url, likes: 0 })
+    onCreate({ title, author, url, comments: [], likes: 0 })
     setAuthor('')
     setTitle('')
     setUrl('')

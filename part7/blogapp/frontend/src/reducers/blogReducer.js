@@ -1,5 +1,5 @@
 import blogService from '../services/blogs'
-import { setNotification } from '../reducers/notificationReducer'
+import { createNotification, setNotification } from '../reducers/notificationReducer'
 
 const byLikes = (b1, b2) => (b2.likes > b1.likes ? 1 : -1)
 
@@ -53,7 +53,7 @@ export const create = (content) => {
       })
     } catch (exception) {
       dispatch(
-        setNotification(`cannot create blog ${content.title}`, 'error', 5)
+        createNotification(`cannot create blog ${content.title}`, 'error', 5000)
       )
     }
   }
@@ -68,7 +68,7 @@ export const deleteBlog = (id) => {
         data: id
       })
     } catch (exception) {
-      dispatch(setNotification(`cannot delete blog`, 'error', 5))
+      dispatch(createNotification(`cannot delete blog`, 'error', 5000))
     }
   }
 }
@@ -82,26 +82,24 @@ export const like = (likedBlog) => {
         data: updatedBlog
       })
     } catch (exception) {
-      dispatch(setNotification(`cannot update blog ${blog.title}`, 'error', 5))
+      dispatch(createNotification(`cannot update blog ${blog.title}`, 'error', 5000))
     }
   }
 }
 
-export const commentBlog = (blog, comment) => {
-  return async (dispatch) => {
-    try {
-      const updatedBlog = await blogService.update({
-        ...blog,
-        comments: blog.comments.concat([comment])
-      })
-      dispatch({
-        type: 'COMMENT',
-        data: updatedBlog
-      })
-    } catch (exception) {
-      dispatch(setNotification(`cannot update blog ${blog.title}`, 'error', 5))
+export const commentBlog = (commentedBlog) => {
+    return async (dispatch) => {
+      try {
+        console.log(commentedBlog)
+        const updatedBlog = await blogService.update(commentedBlog.id, commentedBlog)
+        dispatch({
+          type: 'COMMENT',
+          data: updatedBlog
+        })
+      } catch (exception) {
+        dispatch(createNotification(`cannot update blog ${commentedBlog.title}`, 'error', 5000))
+      }
     }
   }
-}
 
 export default blogReducer
