@@ -18,13 +18,10 @@ const authReducer = (state = [], action) => {
   }
 
   export const initializeUser = () => {
-    console.log('trying to init')
     const loggedUserJSON = window.localStorage.getItem(STORAGE_KEY)
-    console.log(loggedUserJSON)
 
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      console.log(user)
       blogService.setToken(user.token)
       return {
         type: 'INIT_USER',

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Blogs from './components/Blogs'
 import Blog from './components/Blog'
 import Users from './components/Users'
+import User from './components/User'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import { initializeUser, logoutUser } from './reducers/authReducer'
@@ -13,6 +14,7 @@ import {
   useMatch
 } from "react-router-dom"
 import { initializeBlogs } from './reducers/blogReducer'
+import { Navbar, Nav } from 'react-bootstrap'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -33,10 +35,10 @@ const App = () => {
     )
     : null
 
-  // const userMatch = useMatch('/users/:id')
-  // const foundUser = userMatch 
-  //   ? users.find(users => user.id === Number(userMatch.params.id))
-  //   : null
+  const userMatch = useMatch('/users/:id')
+  const foundUser = userMatch 
+    ? users.find(user => user.id === userMatch.params.id)
+    : null
 
   const logout = () => {
     dispatch(logoutUser())
@@ -47,23 +49,33 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h2>blogs</h2>
 
       <Notification />
-
-        <div>
-          <Link style={padding} to="/">home</Link>
-          <Link style={padding} to="/blogs">blogs</Link>
-          <Link style={padding} to="/users">users</Link>
-          {user
-            ? <div> <em>{user.name} logged in</em> <button onClick={logout}>logout</button> </div>
-            : <LoginForm/>
-          }
-        </div>
-
+      <Navbar bg="light" variant="light">
+          <Nav className="me-auto">
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/">home</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/blogs">blogs</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={padding} to="/users">users</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              {user
+                ? <div><em style={padding}>{user.name} logged in</em> <button onClick={logout}>logout</button></div>
+                : <LoginForm/>
+              }
+            </Nav.Link>
+          </Nav>
+      </Navbar>
+    
         <Routes>
           <Route path="/blogs/:id" element={user ? <Blog blog={foundBlog} user={user} /> : <div></div>} />
+          <Route path="/users/:id" element={user ? <User user={foundUser} /> : <div></div>} />
           <Route path="/" element={user ? <Blogs blogs={blogs} user={user}/> : <div></div>} />
           <Route path="/blogs" element={<Blogs blogs={blogs} user={user}/>} />
           <Route path="/users" element={user ? <Users /> : <div></div>} />
