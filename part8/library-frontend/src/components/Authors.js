@@ -23,7 +23,6 @@ const Authors = (props) => {
 
     changeBirthyear({ variables: { name, setBornTo: born }})
     
-    setName('')
     setBorn('')
   }
 
