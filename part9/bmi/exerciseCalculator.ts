@@ -8,7 +8,7 @@ interface Result {
     average: number;
   }
 
-const calculateExercises = (exerciseHours: Array<number>, targetDailyHours: number): Result => {
+export const calculateExercises = (exerciseHours: Array<number>, targetDailyHours: number): Result => {
     const periodLength = exerciseHours.length;
     let trainingDays = 0;
     let totalHours = 0;
@@ -40,8 +40,8 @@ const calculateExercises = (exerciseHours: Array<number>, targetDailyHours: numb
         ratingDescription: ratingDescription,
         target: targetDailyHours,
         average: avgDailyTime
-    }
-}
+    };
+};
 
 interface ExerciseValues {
     hoursArray: Array<number>;
@@ -50,7 +50,7 @@ interface ExerciseValues {
 
 const parseArgumentsExercise = (args: Array<string>): ExerciseValues => {
     if (args.length < 4) throw new Error('Not enough arguments');
-    let hoursArray = [];
+    const hoursArray = [];
     for (let i = 3; i < args.length; i++) {
         if (isNaN(Number(args[i]))) {
             throw new Error('Provided array value not a number.');
@@ -60,19 +60,19 @@ const parseArgumentsExercise = (args: Array<string>): ExerciseValues => {
     if (isNaN(Number(args[2]))) {
         throw new Error('Target daily hours value not a number.');
     } 
-    let targetDailyHours = Number(args[2]);
+    const targetDailyHours = Number(args[2]);
 
     return {
         hoursArray: hoursArray, 
         targetDailyHours: targetDailyHours
-    } 
-  }
+    }; 
+  };
   
   try {
     const { hoursArray, targetDailyHours } = parseArgumentsExercise(process.argv);
     console.log(calculateExercises(hoursArray, targetDailyHours));
   } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
+    let errorMessage = 'Something bad happened.';
     if (error instanceof Error) {
       errorMessage += ' Error: ' + error.message;
     }

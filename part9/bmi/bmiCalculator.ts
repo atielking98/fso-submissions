@@ -1,6 +1,6 @@
-const calculateBmi = (height: number, weight: number, printText: string) => {
-    const heightMetersSquared = Math.pow(height / 100, 2)
-    const BMI = weight / heightMetersSquared
+export const calculateBmi = (height: number, weight: number): string => {
+    const heightMetersSquared = Math.pow(height / 100, 2);
+    const BMI = weight / heightMetersSquared;
     let BmiString;
     if (BMI < 16.0) {
         BmiString = "Underweight (Severe thinness)";
@@ -19,8 +19,8 @@ const calculateBmi = (height: number, weight: number, printText: string) => {
     } else {
         BmiString = "Obese (Class III)";
     }
-    console.log(printText, BmiString);
-}
+    return BmiString;
+};
 interface BmiValues {
     height: number;
     weight: number;
@@ -34,21 +34,17 @@ const parseArguments = (args: Array<string>): BmiValues => {
       return {
         height: Number(args[2]),
         weight: Number(args[3])
-      }
+      };
     } else {
       throw new Error('Provided values were not numbers!');
     }
-  }
-  
-  const multiplicator = (a: number, b: number, printText: string) => {
-    console.log(printText,  a * b);
-  }
+  };
   
   try {
     const { height, weight } = parseArguments(process.argv);
-    calculateBmi(height, weight, `Calculated BMI for height ${height} and weight ${weight}, the result is: `);
+    console.log(`Calculated BMI for height ${height} and weight ${weight}, the result is: `, calculateBmi(height, weight));
   } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
+    let errorMessage = 'Something bad happened.';
     if (error instanceof Error) {
       errorMessage += ' Error: ' + error.message;
     }
