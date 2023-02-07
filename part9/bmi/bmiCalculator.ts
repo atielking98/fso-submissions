@@ -1,23 +1,56 @@
-const calculateBmi = (height: number, weight: number): String => {
+const calculateBmi = (height: number, weight: number, printText: string) => {
     const heightMetersSquared = Math.pow(height / 100, 2)
     const BMI = weight / heightMetersSquared
+    let BmiString;
     if (BMI < 16.0) {
-        return "Underweight (Severe thinness)"
+        BmiString = "Underweight (Severe thinness)";
     } else if (BMI <= 16.9) {
-        return "Underweight (Moderate thinness)"
+        BmiString = "Underweight (Moderate thinness)";
     } else if (BMI <= 18.4) {
-        return "Underweight (Mild thinness)"
+        BmiString = "Underweight (Mild thinness)";
     } else if (BMI <= 24.9) {
-        return "Normal range"
+        BmiString = "Normal range";
     } else if (BMI <= 29.9) {
-        return "Overweight (Pre-obese)"
+        BmiString = "Overweight (Pre-obese)";
     } else if (BMI <= 34.9) {
-        return "Obese (Class I)"
+        BmiString = "Obese (Class I)";
     } else if (BMI <= 39.9) {
-        return "Obese (Class II)"
+        BmiString = "Obese (Class II)";
     } else {
-        return "Obese (Class III)"
+        BmiString = "Obese (Class III)";
     }
+    console.log(printText, BmiString);
 }
+interface BmiValues {
+    height: number;
+    weight: number;
+  }  
 
-console.log(calculateBmi(180, 74))
+const parseArguments = (args: Array<string>): BmiValues => {
+    if (args.length < 4) throw new Error('Not enough arguments');
+    if (args.length > 4) throw new Error('Too many arguments');
+  
+    if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
+      return {
+        height: Number(args[2]),
+        weight: Number(args[3])
+      }
+    } else {
+      throw new Error('Provided values were not numbers!');
+    }
+  }
+  
+  const multiplicator = (a: number, b: number, printText: string) => {
+    console.log(printText,  a * b);
+  }
+  
+  try {
+    const { height, weight } = parseArguments(process.argv);
+    calculateBmi(height, weight, `Calculated BMI for height ${height} and weight ${weight}, the result is: `);
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened.'
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
+  }
