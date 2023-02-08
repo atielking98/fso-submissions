@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import diagnosisRouter from './routes/diagnoses';
+import patientRouter from './routes/patients';
 
 const app = express();
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -14,6 +16,9 @@ router.get('/ping', (_req, res) => {
 });
 
 app.use('/api', router);
+
+app.use('/api/diagnoses', diagnosisRouter);
+app.use('/api/patients', patientRouter);
 
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`);
