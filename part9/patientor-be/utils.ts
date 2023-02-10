@@ -1,4 +1,4 @@
-import { NewPatient, Gender, HospitalEntry, Entry, BaseEntry, OccupationalHealthcareEntry, HealthCheckEntry, HealthCheckRating } from './types';
+import { NewPatient, NewEntry, Gender, HospitalEntry, Entry, BaseEntry, OccupationalHealthcareEntry, HealthCheckEntry, HealthCheckRating } from './types';
 
 const assertNever = (value: never): never => {
 	throw new Error(
@@ -193,4 +193,11 @@ const toNewPatient = (object: any): NewPatient => {
   return newPatient;
 };
 
-export default toNewPatient;
+const toNewEntry = (obj: Record<string, unknown>): NewEntry => {
+	return parseEntry(obj);
+};
+
+export {
+	toNewPatient,
+	toNewEntry,
+};
