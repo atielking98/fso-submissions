@@ -8,6 +8,7 @@ const getPatients = (): Patient[] => {
 
 const findById = (id: string): Patient | undefined => {
   const patient = patients.find(p=> p.id === id);
+  console.log(patients);
   return patient;
 };
 
@@ -18,7 +19,7 @@ const getNonSensitivePatients = (): NonSensitivePatient[] => {
         name,
         dateOfBirth,
         gender,
-        occupation
+        occupation,
     }));
 };
 
